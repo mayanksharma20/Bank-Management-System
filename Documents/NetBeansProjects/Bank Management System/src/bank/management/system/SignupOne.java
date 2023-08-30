@@ -6,7 +6,10 @@ import java.awt.*;
 import java.util.*;
 import com.toedter.calendar.JDateChooser;
 
-public class SignupOne extends JFrame {
+import java.awt.event.*;
+
+public class SignupOne extends JFrame implements ActionListener{
+    long random;
     JTextField nameTextField,fnameTextField,emailTextField,addressTextField,cityTextField ,stateTextField,pinTextField;
     JDateChooser dateChooser;
     JRadioButton male,female,married,unmarried,other;
@@ -15,7 +18,7 @@ public class SignupOne extends JFrame {
     
     SignupOne(){
         Random ran=new Random();
-        long random=Math.abs(ran.nextLong()%9000L + 1000L);
+        random=Math.abs(ran.nextLong()%9000L + 1000L);
         
         
         JLabel formno=new JLabel("APPLICATION FORM NO: "+random);
@@ -168,12 +171,13 @@ public class SignupOne extends JFrame {
         pinTextField.setBounds(300,590,400,30);
         add(pinTextField);
         
-        
+        //button
         next=new JButton("NEXT");
         next.setBackground(Color.BLACK);
         next.setForeground(Color.WHITE);
         next.setFont(new Font("Raleway",Font.BOLD,14));
         next.setBounds(620,640,80,30);
+        next.addActionListener(this);
         add(next);
         
         
@@ -187,6 +191,55 @@ public class SignupOne extends JFrame {
         setVisible(true);
     }
     
+    public void actionPerformed(ActionEvent ae){
+        
+        String formno=""+random;
+        
+        String name=nameTextField.getText();
+        
+        String fname=fnameTextField.getText();
+        
+        String dob=((JTextField)dateChooser.getDateEditor().getUiComponent()).getText();
+        
+        String gender=null;
+        if(male.isSelected()){
+            gender="Male";
+        }else if(female.isSelected()){
+            gender="Female";
+        }
+        
+        String email=emailTextField.getText();
+        
+        String marital=null;
+        if(married.isSelected()){
+            marital="Married";
+        }else if(unmarried.isSelected()){
+            marital="Unmarried";
+        }else if(other.isSelected()){
+            marital="other";
+        }
+        
+        String address=addressTextField.getText();
+        
+        String city=cityTextField.getText();
+        
+        String state=stateTextField.getText();
+
+        String pin=pinTextField.getText();
+        
+        try{
+            //validation
+            if(name.equals("")){
+                JOptionPane.showMessageDialog(null,"Name is Required");
+            } else{
+                Conn c=new Conn();
+                String query="insert into signup values('"+formno+"','"+name+"','"+fname+"','"+dob+"','"+gender+"','"+email+"','"+marital+"','"+address+"','"+city+"','"+pin+"','"+state+"')";
+                c.s.executeUpdate(query);
+            }
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
     public static void main(String[] args) {
         new SignupOne();
     }
