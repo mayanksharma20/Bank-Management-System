@@ -10,6 +10,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
+import java.util.Date;
+import java.sql.*;
 
 public class Withdrawl extends JFrame implements ActionListener{
     JTextField amount;
@@ -68,6 +70,22 @@ public class Withdrawl extends JFrame implements ActionListener{
             }else{
                 try{
                     Conn conn=new Conn();
+                    //try net trick
+                    ResultSet rs=conn.s.executeQuery("select * from bank where pin= '"+pinnumber+"'");
+                    int balance=0;
+                    while(rs.next()){
+                        if(rs.getString("type").equals("Deposit")){
+                            balance+=Integer.parseInt(rs.getString("amount"));
+                        }else{
+                            balance-=Integer.parseInt(rs.getString("amount"));
+                        }
+                    }
+                
+                    if(balance <Integer.parseInt(number)){
+                    JOptionPane.showMessageDialog(null,"Insufficient Balance");
+                    return;
+                }
+                    //upto this
                     String query="insert into bank values('"+pinnumber+"','"+date +"','Withdrawl','"+number+"' )";
                     conn.s.executeUpdate(query);
                     JOptionPane.showMessageDialog(null, "rs "+number+" Withdraw Successfully");
